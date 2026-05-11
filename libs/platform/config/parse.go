@@ -1,19 +1,30 @@
 package config
 
 import (
+	"os"
 	"strconv"
 
 	"github.com/napryag/eventflow-platform/libs/platform/errs"
 )
 
-// Checks if ENV varibable with name "field" is integer.
-//
-//	func MustInt("1", "LOG_LEVEL")
-func MustInt(value, field string) (int, error) {
-	n, err := strconv.Atoi(value)
-	if err != nil {
-		return 0, errs.New(field + " must be numeric").Wrap(err)
+// ParseLogLevel gets env variable with "key" name,
+// converting to int and checks if log level supported by logger.
+func ParseLogLevel(key string) (int, error) {
+	logLevelString := os.Getenv(key)
+	if logLevelString == "" {
+		return 0, errs.New("missing LOG_LEVEL")
 	}
 
-	return n, nil
+	logLevel, err := strconv.Atoi(logLevelString)
+	if err != nil {
+		return 0, errs.New("LOG_LEVEL must be numeric").Wrap(err)
+	}
+
+	switch logLevel {
+	case -1, 0, 1, 2, 3:
+	default:
+		return 0, errs.New("unsupported LOG_LEVEL")
+	}
+
+	return logLevel, nil
 }

@@ -1,21 +1,23 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
-	"github.com/napryag/eventflow-platform/libs/platform/logger"
+	"github.com/napryag/eventflow-platform/libs/platform/errs"
+	"github.com/napryag/eventflow-platform/libs/platform/logging/zerolog"
 	"github.com/napryag/eventflow-platform/services/authhub/config"
+	"github.com/rs/zerolog/log"
 )
 
 func main() {
 	cfg, err := config.Load()
 	if err != nil {
-		fmt.Println("failed to load config:", err)
+		err = errs.New("failed to load config").Wrap(err)
+		log.Err(err).Send()
 		os.Exit(1)
 	}
 
-	log := logger.New(cfg.LogLevel)
+	log := zerolog.NewZerolog(cfg.LogLevel)
 
 	log.Info().Str("service", "authhub").Msg("api initialized")
 }

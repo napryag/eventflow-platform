@@ -1,4 +1,4 @@
-package logger
+package zerolog
 
 type Logger interface {
 	Info() LogEvent

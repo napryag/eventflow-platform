@@ -1,4 +1,4 @@
-package logger
+package zerolog
 
 import (
 	"os"
@@ -14,17 +14,15 @@ type zeroEvent struct {
 	event *zerolog.Event
 }
 
-func New(logLevel int) Logger {
+func NewZerolog(logLevel int) Logger {
 	zerolog.TimeFieldFormat = "02-01-2006 15:04:05"
 
-	log := zerolog.New(os.Stdout).
-		Level(zerolog.Level(logLevel)).
-		With().
-		Timestamp().
-		Logger()
-
 	return &zeroLogger{
-		logger: log,
+		logger: zerolog.New(os.Stdout).
+			Level(zerolog.Level(logLevel)).
+			With().
+			Timestamp().
+			Logger(),
 	}
 }
 
