@@ -14,7 +14,7 @@ type zeroEvent struct {
 	event *zerolog.Event
 }
 
-func NewZerolog(logLevel int) Logger {
+func New(logLevel int) Logger {
 	zerolog.TimeFieldFormat = "02-01-2006 15:04:05"
 
 	return &zeroLogger{

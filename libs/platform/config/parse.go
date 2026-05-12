@@ -10,9 +10,12 @@ import (
 // ParseLogLevel gets env variable with "key" name,
 // converting to int and checks if log level supported by logger.
 func ParseLogLevel(key string) (int, error) {
-	logLevelString := os.Getenv(key)
-	if logLevelString == "" {
+	logLevelString, ok := os.LookupEnv(key)
+	if !ok {
 		return 0, errs.New("missing LOG_LEVEL")
+	}
+	if logLevelString == "" {
+		return 0, errs.New("LOG_LEVEL is not set")
 	}
 
 	logLevel, err := strconv.Atoi(logLevelString)

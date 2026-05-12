@@ -17,7 +17,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	log := zerolog.NewZerolog(cfg.LogLevel)
+	log := zerolog.New(cfg.LogLevel)
 
 	log.Info().Str("service", "authhub").Msg("api initialized")
 }
