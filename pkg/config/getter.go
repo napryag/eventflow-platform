@@ -47,3 +47,23 @@ func GetEnvString(key string) (string, error) {
 	}
 	return valueString, nil
 }
+
+func GetHTTPPort() (string, error) {
+	valueString, err := GetEnvString("HTTP_PORT")
+	if err != nil {
+		return "", errs.New("failed ti get string").
+			Wrap(err)
+	}
+
+	value, err := strconv.Atoi(valueString)
+	if err != nil {
+		return "", errs.New("value must be numeric").
+			Wrap(err)
+	}
+
+	if value < 1 || value > 65535 {
+		return "", errs.New("invalid value")
+	}
+
+	return valueString, nil
+}
