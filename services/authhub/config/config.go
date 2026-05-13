@@ -2,8 +2,8 @@ package config
 
 import (
 	"github.com/joho/godotenv"
-	libsconfig "github.com/napryag/eventflow-platform/libs/platform/config"
-	"github.com/napryag/eventflow-platform/libs/platform/errs"
+	"github.com/napryag/eventflow-platform/pkg/config"
+	"github.com/napryag/eventflow-platform/pkg/errs"
 )
 
 type Config struct {
@@ -17,9 +17,9 @@ func Load() (*Config, error) {
 		return nil, errs.New("failed to load env").Wrap(err)
 	}
 
-	logLevel, err := libsconfig.ParseLogLevel("LOG_LEVEL")
+	logLevel, err := config.GetLogLevel()
 	if err != nil {
-		return nil, errs.New("failed to parse LOG_LEVEL").Wrap(err)
+		return nil, errs.New("failed to get log level").Wrap(err)
 	}
 
 	cfg.LogLevel = logLevel

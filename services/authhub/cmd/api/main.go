@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/napryag/eventflow-platform/libs/platform/errs"
-	"github.com/napryag/eventflow-platform/libs/platform/logging/zerolog"
+	"github.com/napryag/eventflow-platform/pkg/errs"
+	"github.com/napryag/eventflow-platform/pkg/logging/zerolog"
 	"github.com/napryag/eventflow-platform/services/authhub/config"
 	"github.com/rs/zerolog/log"
 )
@@ -17,7 +17,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	log := zerolog.New(cfg.LogLevel)
+	logger := zerolog.New(cfg.LogLevel)
 
-	log.Info().Str("service", "authhub").Msg("api initialized")
+	logger.Info().Str("service", "authhub").Msg("api initialized")
 }
