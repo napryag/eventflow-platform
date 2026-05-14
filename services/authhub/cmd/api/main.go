@@ -20,7 +20,7 @@ func main() {
 
 	logger := zerolog.New(cfg.LogLevel)
 
-	router := http.SetupRouter()
+	router := http.New()
 
 	logger.Info().Str("service", "authhub").Msg("api initialized")
 

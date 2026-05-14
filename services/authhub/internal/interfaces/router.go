@@ -6,17 +6,27 @@ import (
 )
 
 type GinRouter struct {
-	router *gin.Engine
+	engine *gin.Engine
 }
 
-func SetupRouter() GinRouter {
-	router := gin.Default()
-	router.GET("/health", HealthHandler)
-	return GinRouter{router: router}
+func New() *GinRouter {
+	engine := gin.Default()
+
+	r := &GinRouter{
+		engine: engine,
+	}
+
+	r.setupRoutes()
+
+	return r
+}
+
+func (g *GinRouter) setupRoutes() {
+	g.engine.GET("/health", HealthHandler)
 }
 
 func (g *GinRouter) Run(address config.HTTPConfig) error {
-	if err := g.router.Run(address.Host + ":" + address.Port); err != nil {
+	if err := g.engine.Run(address.Host + ":" + address.Port); err != nil {
 		return err
 	}
 	return nil
