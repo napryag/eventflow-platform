@@ -26,5 +26,6 @@ func main() {
 
 	if err := router.Run(cfg.HTTP); err != nil {
 		logger.Err(err).Msg("failed to start server")
+		os.Exit(1)
 	}
 }
