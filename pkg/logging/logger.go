@@ -6,6 +6,7 @@ type Logger interface {
 	Info() LogEvent
 	Warn() LogEvent
 	Error() LogEvent
+	Err(err error) LogEvent
 }
 
 type LogEvent interface {

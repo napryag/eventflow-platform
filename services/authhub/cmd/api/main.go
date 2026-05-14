@@ -20,12 +20,11 @@ func main() {
 
 	logger := zerolog.New(cfg.LogLevel)
 
+	router := http.SetupRouter()
+
 	logger.Info().Str("service", "authhub").Msg("api initialized")
 
-	router := http.SetupRouter()
-	router.GET("/health", http.HealthHandler)
-
-	if err := router.Run(cfg.HTTP.Host + ":" + cfg.HTTP.Port); err != nil {
-		logger.Error().Msg("failed to start server")
+	if err := router.Run(cfg.HTTP); err != nil {
+		logger.Err(err).Msg("failed to start server")
 	}
 }
