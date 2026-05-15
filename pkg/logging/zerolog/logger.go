@@ -57,6 +57,12 @@ func (zl *zeroLogger) Error() logging.LogEvent {
 	}
 }
 
+func (zl *zeroLogger) Err(err error) logging.LogEvent {
+	return &zeroEvent{
+		event: zl.logger.Err(err),
+	}
+}
+
 func (ze *zeroEvent) Msg(msg string) {
 	ze.event.Msg(msg)
 }

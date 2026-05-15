@@ -1,0 +1,33 @@
+package http
+
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/napryag/eventflow-platform/services/authhub/config"
+)
+
+type GinRouter struct {
+	engine *gin.Engine
+}
+
+func New() *GinRouter {
+	engine := gin.Default()
+
+	r := &GinRouter{
+		engine: engine,
+	}
+
+	r.setupRoutes()
+
+	return r
+}
+
+func (g *GinRouter) setupRoutes() {
+	g.engine.GET("/health", HealthHandler)
+}
+
+func (g *GinRouter) Run(address config.HTTPConfig) error {
+	if err := g.engine.Run(address.Host + ":" + address.Port); err != nil {
+		return err
+	}
+	return nil
+}
