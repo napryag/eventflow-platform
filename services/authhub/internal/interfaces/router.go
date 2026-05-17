@@ -21,13 +21,13 @@ func New() *GinRouter {
 	return r
 }
 
-func (g *GinRouter) setupRoutes() {
-	g.engine.GET("/health", HealthHandler)
-}
-
 func (g *GinRouter) Run(address config.HTTPConfig) error {
 	if err := g.engine.Run(address.Host + ":" + address.Port); err != nil {
 		return err
 	}
 	return nil
+}
+
+func (g *GinRouter) setupRoutes() {
+	g.engine.GET("/health", HealthHandler)
 }
