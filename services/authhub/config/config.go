@@ -4,6 +4,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/napryag/eventflow-platform/pkg/config"
 	"github.com/napryag/eventflow-platform/pkg/errs"
+	"github.com/rs/zerolog/log"
 )
 
 type HTTPConfig struct {
@@ -19,7 +20,7 @@ func Load() (*Config, error) {
 	var cfg Config
 
 	if err := godotenv.Load(); err != nil {
-		return nil, errs.New("failed to load env").Wrap(err)
+		log.Warn().Msg("missing env file")
 	}
 
 	host, err := config.GetEnvString("HTTP_HOST")
