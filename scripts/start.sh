@@ -17,7 +17,7 @@ STOP=false
 RESTART=false
 LOGS=false
 
-TARGETS=""
+TARGETS="all"
 
 print_usage() {
   echo "Usage:"
@@ -33,7 +33,7 @@ print_usage() {
   echo "  -l              Show service logs"
   echo ""
   echo "Targets:"
-  echo "  -t all|<list>   Service targets separated by comma"
+  echo "  -t all|<list>   Service targets separated by comma (default: all)"
   echo ""
   echo "Supported targets:"
   echo "  authhub"
@@ -55,11 +55,6 @@ validate_service() {
 }
 
 resolve_targets() {
-  if [ -z "$TARGETS" ]; then
-    echo "Error: No service targets provided."
-    echo "Use -t authhub or -t all"
-    exit 1
-  fi
 
   if [ "$TARGETS" = "all" ]; then
     SERVICES="authhub"

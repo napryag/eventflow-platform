@@ -22,20 +22,8 @@ echo "Docker is available."
 
 if [ ! -f .env ]; then
   echo ".env file not found."
-
-  if [ -f .env.example ]; then
-    cp .env.example .env
-    echo ".env created from .env.example"
-  else
-    touch .env
-    echo "Empty .env file created"
-  fi
-else
-  echo ".env already exists"
+  exit 1
 fi
 
 echo ""
 echo "Initialization completed."
-echo "Initialized:"
-echo " - Docker availability check"
-echo " - Local environment file (.env)"
