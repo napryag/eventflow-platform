@@ -25,5 +25,17 @@ if [ ! -f .env ]; then
   exit 1
 fi
 
+echo "Starting PostgreSQL..."
+docker compose up -d postgres
+
+echo "Waiting for PostgreSQL..."
+until docker compose ps postgres | grep -q healthy; do
+  sleep 2
+done
+
+echo "Running Liquibase migrations..."
+docker compose up -d liquibase
+docker compose wait liquibase
+
 echo ""
 echo "Initialization completed."

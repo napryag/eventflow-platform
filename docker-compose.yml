@@ -1,4 +1,44 @@
 services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: eventflow-postgres
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  liquibase:
+    build:
+      context: .
+      dockerfile: Dockerfile.liquibase
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    volumes:
+      - ./services/authhub/migrations:/liquibase/changelog:ro
+    environment:
+      LIQUIBASE_COMMAND_URL: >-
+        jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=${POSTGRES_SSLMODE}
+      LIQUIBASE_COMMAND_USERNAME: ${POSTGRES_USER}
+      LIQUIBASE_COMMAND_PASSWORD: ${POSTGRES_PASSWORD}
+      LIQUIBASE_COMMAND_CHANGELOG_FILE: ${LIQUIBASE_COMMAND_CHANGELOG_FILE}
+    command: ["update"]
+    restart: "no"
+
   authhub:
     build:
       context: .
@@ -7,7 +47,12 @@ services:
         CMD_PATH: ./services/authhub/cmd
     container_name: eventflow-authhub
     ports:
-      - "${HTTP_PORT}:8080"
+      - "${HTTP_PORT}:${HTTP_PORT}"
     env_file:
       - .env
-    
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
