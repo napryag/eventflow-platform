@@ -1,5 +1,7 @@
 extends: default
 rules:
+  brackets:
+    max-spaces-inside: 1
   document-start: disable
   truthy:
     allowed-values:
