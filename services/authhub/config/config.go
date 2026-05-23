@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/joho/godotenv"
@@ -14,19 +13,10 @@ type HTTPConfig struct {
 	Host string
 	Port string
 }
-
-type DatabaseConfig struct {
-	Host     string
-	Port     string
-	Name     string
-	User     string
-	Password string
-	SSLMode  string
-}
 type Config struct {
 	LogLevel int
 	HTTP     HTTPConfig
-	Database DatabaseConfig
+	Database config.DatabaseConfig
 }
 
 func Load() (*Config, error) {
@@ -44,12 +34,12 @@ func Load() (*Config, error) {
 
 	cfg.HTTP, err = loadHTTPConfig()
 	if err != nil {
-		return nil, err
+		return nil, errs.New("failed to load http config").Wrap(err)
 	}
 
 	cfg.Database, err = loadDatabaseConfig()
 	if err != nil {
-		return nil, err
+		return nil, errs.New("failed to load database config").Wrap(err)
 	}
 
 	return &cfg, nil
@@ -87,18 +77,6 @@ func GetHTTPPort() (string, error) {
 	return valueString, nil
 }
 
-func (dc DatabaseConfig) DSN() string {
-	return fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		dc.Host,
-		dc.Port,
-		dc.User,
-		dc.Password,
-		dc.Name,
-		dc.SSLMode,
-	)
-}
-
 func loadHTTPConfig() (HTTPConfig, error) {
 	var cfg HTTPConfig
 	var err error
@@ -116,8 +94,8 @@ func loadHTTPConfig() (HTTPConfig, error) {
 	return cfg, nil
 }
 
-func loadDatabaseConfig() (DatabaseConfig, error) {
-	var cfg DatabaseConfig
+func loadDatabaseConfig() (config.DatabaseConfig, error) {
+	var cfg config.DatabaseConfig
 	var err error
 
 	cfg.Host, err = config.GetEnvString("POSTGRES_HOST")
@@ -125,7 +103,7 @@ func loadDatabaseConfig() (DatabaseConfig, error) {
 		return cfg, errs.New("failed to get postgres host").Wrap(err)
 	}
 
-	cfg.Port, err = config.GetEnvString("POSTGRES_PORT")
+	cfg.Port, err = getPostgresPort()
 	if err != nil {
 		return cfg, errs.New("failed to get postgres port").Wrap(err)
 	}
@@ -145,10 +123,37 @@ func loadDatabaseConfig() (DatabaseConfig, error) {
 		return cfg, errs.New("failed to get postgres password").Wrap(err)
 	}
 
-	cfg.SSLMode, err = config.GetEnvString("POSTGRES_SSLMODE")
+	cfg.SSLMode, err = getPostgresSSLMode()
 	if err != nil {
 		return cfg, errs.New("failed to get postgres ssl mode").Wrap(err)
 	}
 
 	return cfg, nil
+}
+
+func getPostgresPort() (string, error) {
+	port, err := config.GetEnvInt("POSTGRES_PORT")
+	if err != nil {
+		return "", errs.New("invalid POSTGRES_PORT").Wrap(err)
+	}
+
+	if port < 1 || port > 65535 {
+		return "", errs.New("POSTGRES_PORT out of range").Arg("value", port)
+	}
+
+	return strconv.Itoa(port), nil
+}
+
+func getPostgresSSLMode() (string, error) {
+	mode, err := config.GetEnvString("POSTGRES_SSLMODE")
+	if err != nil {
+		return "", errs.New("failed to get POSTGRES_SSLMODE").Wrap(err)
+	}
+
+	switch mode {
+	case "disable", "allow", "prefer", "require", "verify-ca", "verify-full":
+		return mode, nil
+	default:
+		return "", errs.New("unsupported POSTGRES_SSLMODE").Arg("value", mode)
+	}
 }

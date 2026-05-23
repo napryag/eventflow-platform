@@ -12,4 +12,5 @@ type Logger interface {
 type LogEvent interface {
 	Msg(msg string)
 	Str(key, value string) LogEvent
+	Send()
 }

@@ -5,6 +5,21 @@ set -e
 # This script provides a single entry point
 # for managing local application services.
 
+SCRIPT_TIMEOUT="${SCRIPT_TIMEOUT:-1800}" # 30 min
+
+run_with_timeout() {
+  if [ -z "$TIMEOUT_BIN" ]; then
+    TIMEOUT_BIN=$(command -v timeout || command -v gtimeout)
+  fi
+
+  if [ -z "$TIMEOUT_BIN" ]; then
+    echo "timeout utility not found"
+    exit 1
+  fi
+
+  "$TIMEOUT_BIN" --foreground "$SCRIPT_TIMEOUT" "$@"
+}
+
 COMPOSE_FILE="docker-compose.yml"
 
 SUPPORTED_SERVICES="authhub"
@@ -120,7 +135,8 @@ if [ "$BUILD" = true ]; then
 
   for service in $SERVICES; do
     echo "Building service: $service"
-    docker compose -f "$COMPOSE_FILE" build "$service"
+    run_with_timeout \
+      docker compose -f "$COMPOSE_FILE" build "$service"
   done
 fi
 
@@ -129,7 +145,8 @@ if [ "$BUILD_NO_CACHE" = true ]; then
 
   for service in $SERVICES; do
     echo "Building service without cache: $service"
-    docker compose -f "$COMPOSE_FILE" build --no-cache "$service"
+    run_with_timeout \
+      docker compose -f "$COMPOSE_FILE" build --no-cache "$service"
   done
 fi
 
@@ -150,7 +167,8 @@ if [ "$STOP" = true ]; then
 
   for service in $SERVICES; do
     echo "Stopping service: $service"
-    docker compose -f "$COMPOSE_FILE" stop "$service"
+    run_with_timeout \
+      docker compose -f "$COMPOSE_FILE" stop "$service"
   done
 fi
 
@@ -159,7 +177,8 @@ if [ "$RESTART" = true ]; then
 
   for service in $SERVICES; do
     echo "Restarting service: $service"
-    docker compose -f "$COMPOSE_FILE" restart "$service"
+    run_with_timeout \
+      docker compose -f "$COMPOSE_FILE" restart "$service"
   done
 fi
 

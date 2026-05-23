@@ -71,3 +71,7 @@ func (ze *zeroEvent) Str(key, value string) logging.LogEvent {
 	ze.event.Str(key, value)
 	return ze
 }
+
+func (ze *zeroEvent) Send() {
+	ze.event.Send()
+}

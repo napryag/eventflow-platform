@@ -3,7 +3,7 @@ run:
 
 output:
   formats:
-    - format: colored-line-number   
+    - format: colored-line-number
 
 linters:
   disable-all: true
@@ -30,7 +30,7 @@ linters-settings:
     threshold: 130
   revive:
     rules:
-      - name: exported    
+      - name: exported
         disabled: true
   gofumpt:
     extra-rules: true

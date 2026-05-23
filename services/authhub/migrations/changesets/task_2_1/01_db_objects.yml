@@ -1,43 +1,38 @@
 databaseChangeLog:
-- preConditions:
-    - runningAs:
-        username:  eventflow
-
-- changeSet:
-      id:  01-table-users
-      author:  author
+  - preConditions:
+      - runningAs:
+          username: eventflow
+  - changeSet:
+      id: task_2_1_table_users
+      author: author
       changes:
-       - createTable:
-            tableName:  users
+        - createTable:
+            tableName: users
             columns:
               - column:
-                  name:  id
-                  type:  UUID
+                  name: id
+                  type: UUID
                   constraints:
-                    primaryKey:  true
-                    nullable:  false
-
+                    primaryKey: true
+                    nullable: false
               - column:
-                  name:  email
-                  type:  varchar
+                  name: email
+                  type: varchar
                   constraints:
                     unique: true
-                    nullable:  false
-
+                    nullable: false
               - column:
-                  name:  password_hash
-                  type:  varchar
+                  name: password_hash
+                  type: varchar
                   constraints:
                     nullable: false
-
               - column:
-                  name:  created_at
-                  type:  timestamptz
+                  name: created_at
+                  type: timestamptz
                   constraints:
                     nullable: false
-
               - column:
-                  name:  updated_at
-                  type:  timestamptz
+                  name: updated_at
+                  type: timestamptz
                   constraints:
                     nullable: false
