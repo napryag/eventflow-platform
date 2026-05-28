@@ -6,6 +6,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/napryag/eventflow-platform/pkg/config"
 	"github.com/napryag/eventflow-platform/pkg/errs"
+	"github.com/napryag/eventflow-platform/pkg/postgres"
 	"github.com/rs/zerolog/log"
 )
 
@@ -16,7 +17,7 @@ type HTTPConfig struct {
 type Config struct {
 	LogLevel int
 	HTTP     HTTPConfig
-	Database config.DatabaseConfig
+	Database postgres.DatabaseConfig
 }
 
 func Load() (*Config, error) {
@@ -94,8 +95,8 @@ func loadHTTPConfig() (HTTPConfig, error) {
 	return cfg, nil
 }
 
-func loadDatabaseConfig() (config.DatabaseConfig, error) {
-	var cfg config.DatabaseConfig
+func loadDatabaseConfig() (postgres.DatabaseConfig, error) {
+	var cfg postgres.DatabaseConfig
 	var err error
 
 	cfg.Host, err = config.GetEnvString("POSTGRES_HOST")

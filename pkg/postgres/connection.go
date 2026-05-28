@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/napryag/eventflow-platform/pkg/config"
 	"github.com/napryag/eventflow-platform/pkg/errs"
 	"github.com/napryag/eventflow-platform/pkg/logging"
 	gormpostgres "gorm.io/driver/postgres"
@@ -15,7 +14,7 @@ const defaultPingTimeout = 5 * time.Second
 
 func NewConnection(
 	ctx context.Context,
-	cfg config.DatabaseConfig,
+	cfg DatabaseConfig,
 	logger logging.Logger,
 ) (*gorm.DB, error) {
 	if err := cfg.Validate(); err != nil {
@@ -43,7 +42,7 @@ func NewConnection(
 		return nil, err
 	}
 
-	config.ConfigurePool(sqlDB, cfg)
+	ConfigurePool(sqlDB, cfg)
 
 	timeout := cfg.PingTimeout
 	if timeout == 0 {
@@ -54,13 +53,18 @@ func NewConnection(
 	defer cancel()
 
 	if err := sqlDB.PingContext(pingCtx); err != nil {
-		_ = sqlDB.Close()
+		if closeErr := sqlDB.Close(); closeErr != nil {
+			logger.Err(errs.New("failed to close sql connection").Wrap(closeErr)).Send()
+		}
+
 		err = errs.New("failed to ping postgres").
 			Arg("host", cfg.Host).
 			Arg("port", cfg.Port).
 			Arg("database", cfg.Name).
 			Wrap(err)
+
 		logger.Err(err).Send()
+
 		return nil, err
 	}
 

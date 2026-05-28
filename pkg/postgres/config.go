@@ -1,4 +1,4 @@
-package config
+package postgres
 
 import (
 	"database/sql"
@@ -18,11 +18,11 @@ type DatabaseConfig struct {
 	Password string
 	SSLMode  string
 
-	MaxOpenConns    int
-	MaxIdleConns    int
-	ConnMaxLifetime time.Duration
-	ConnMaxIdleTime time.Duration
-	PingTimeout     time.Duration
+	MaxOpenConnections int
+	MaxIdleConnections int
+	ConnMaxLifetime    time.Duration
+	ConnMaxIdleTime    time.Duration
+	PingTimeout        time.Duration
 }
 
 func (c DatabaseConfig) DSN() string {
@@ -64,11 +64,11 @@ func (c DatabaseConfig) Validate() error {
 }
 
 func ConfigurePool(db *sql.DB, cfg DatabaseConfig) {
-	if cfg.MaxOpenConns > 0 {
-		db.SetMaxOpenConns(cfg.MaxOpenConns)
+	if cfg.MaxOpenConnections > 0 {
+		db.SetMaxOpenConns(cfg.MaxOpenConnections)
 	}
-	if cfg.MaxIdleConns > 0 {
-		db.SetMaxIdleConns(cfg.MaxIdleConns)
+	if cfg.MaxIdleConnections > 0 {
+		db.SetMaxIdleConns(cfg.MaxIdleConnections)
 	}
 	if cfg.ConnMaxLifetime > 0 {
 		db.SetConnMaxLifetime(cfg.ConnMaxLifetime)

@@ -1,7 +1,4 @@
 databaseChangeLog:
-  - preConditions:
-      - runningAs:
-          username: eventflow
   - changeSet:
       id: task_2_1_table_users
       author: author
