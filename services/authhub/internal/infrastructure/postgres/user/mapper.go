@@ -1,4 +1,4 @@
-package postgres
+package user
 
 import "github.com/napryag/eventflow-platform/services/authhub/internal/domain/user"
 

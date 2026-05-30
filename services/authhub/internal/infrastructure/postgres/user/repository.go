@@ -1,14 +1,17 @@
-package postgres
+package user
 
 import (
 	"context"
 	"errors"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/napryag/eventflow-platform/services/authhub/internal/application"
 	"github.com/napryag/eventflow-platform/services/authhub/internal/domain/user"
 	"gorm.io/gorm"
 )
+
+const uniqueViolationCode = "23505"
 
 type UserRepository struct {
 	db *gorm.DB
@@ -19,9 +22,10 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 }
 
 func (u *UserRepository) Create(ctx context.Context, user *user.User) error {
+	var pgErr *pgconn.PgError
 	model := toModel(user)
-	if err := u.db.Create(model).Error; err != nil {
-		if isDuplicateEmailError(err) {
+	if err := u.db.WithContext(ctx).Create(model).Error; err != nil {
+		if errors.As(err, &pgErr) && pgErr.Code == uniqueViolationCode {
 			return application.ErrUserAlreadyExists
 		}
 
@@ -33,7 +37,7 @@ func (u *UserRepository) Create(ctx context.Context, user *user.User) error {
 func (u *UserRepository) GetByEmail(ctx context.Context, email string) (*user.User, error) {
 	var model userModel
 
-	if err := u.db.Where("email = ?", email).
+	if err := u.db.WithContext(ctx).Where("email = ?", email).
 		First(&model).
 		Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -49,7 +53,7 @@ func (u *UserRepository) GetByEmail(ctx context.Context, email string) (*user.Us
 func (u *UserRepository) GetByID(ctx context.Context, id uuid.UUID) (*user.User, error) {
 	var model userModel
 
-	if err := u.db.Where("id = ?", id).
+	if err := u.db.WithContext(ctx).Where("id = ?", id).
 		First(&model).
 		Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

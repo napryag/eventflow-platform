@@ -1,10 +1,12 @@
 package user
 
 import (
+	"net/mail"
 	"strings"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/napryag/eventflow-platform/pkg/errs"
 )
 
 type User struct {
@@ -16,11 +18,10 @@ type User struct {
 }
 
 func NewUser(id uuid.UUID, email, password string, created, updated time.Time) (*User, error) {
-	if email == "" {
-		return nil, ErrEmptyEmail
+	email, err := validateEmail(email)
+	if err != nil {
+		return nil, errs.New("failed to validate email").Wrap(err)
 	}
-
-	email = strings.ToLower(email)
 
 	if password == "" {
 		return nil, ErrEmptyPassword
@@ -33,4 +34,19 @@ func NewUser(id uuid.UUID, email, password string, created, updated time.Time) (
 		CreatedAt:    created,
 		UpdatedAt:    updated,
 	}, nil
+}
+
+func validateEmail(email string) (string, error) {
+	email = strings.TrimSpace(email)
+	email = strings.ToLower(email)
+
+	if email == "" {
+		return "", ErrEmptyEmail
+	}
+
+	if _, err := mail.ParseAddress(email); err != nil {
+		return "", ErrInvalidEmail
+	}
+
+	return email, nil
 }
