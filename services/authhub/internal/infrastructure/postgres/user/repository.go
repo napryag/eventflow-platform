@@ -21,7 +21,7 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{db: db}
 }
 
-func (u *UserRepository) Create(ctx context.Context, user *user.User) error {
+func (u *UserRepository) Create(ctx context.Context, user user.User) error {
 	var pgErr *pgconn.PgError
 	model := toModel(user)
 	if err := u.db.WithContext(ctx).Create(model).Error; err != nil {

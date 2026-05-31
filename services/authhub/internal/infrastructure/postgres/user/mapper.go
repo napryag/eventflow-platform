@@ -2,7 +2,7 @@ package user
 
 import "github.com/napryag/eventflow-platform/services/authhub/internal/domain/user"
 
-func toModel(u *user.User) userModel {
+func toModel(u user.User) userModel {
 	return userModel{
 		ID:           u.ID,
 		Email:        u.Email,

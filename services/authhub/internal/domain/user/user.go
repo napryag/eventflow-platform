@@ -18,7 +18,7 @@ type User struct {
 }
 
 func NewUser(id uuid.UUID, email, password string, created, updated time.Time) (*User, error) {
-	email, err := validateEmail(email)
+	email, err := validateAndNormalizeEmail(email)
 	if err != nil {
 		return nil, errs.New("failed to validate email").Wrap(err)
 	}
@@ -36,9 +36,8 @@ func NewUser(id uuid.UUID, email, password string, created, updated time.Time) (
 	}, nil
 }
 
-func validateEmail(email string) (string, error) {
-	email = strings.TrimSpace(email)
-	email = strings.ToLower(email)
+func validateAndNormalizeEmail(email string) (string, error) {
+	email = strings.TrimSpace(strings.ToLower(email))
 
 	if email == "" {
 		return "", ErrEmptyEmail
