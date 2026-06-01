@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: task_2_1_table_users
+      author: author
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: passwordhash
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: createdat
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updatedat
+                  type: timestamptz
+                  constraints:
+                    nullable: false

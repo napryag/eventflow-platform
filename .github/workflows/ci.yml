@@ -4,23 +4,11 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+env:
+  GO_VERSION: "1.25.10"
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout    
-        uses: actions/checkout@v4
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: 1.25.10
-      - name: Download dependencies
-        run: go mod download
-      - name: Run gofmt
-        run: gofmt -w .
-      - name: Run go vet
-        run: go vet ./...   
-  unit-test:
+    name: Build and static checks
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,10 +16,43 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: 1.25.10
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Check formatting
+        shell: bash
+        run: |
+          files="$(gofmt -l .)"
+          if [ -n "$files" ]; then
+            echo "::error::Go files are not formatted. Run: gofmt -w ."
+            echo "$files"
+            exit 1
+          fi
+      - name: Check module files
+        run: go mod tidy -diff
+      - name: Build packages
+        run: go build ./...
+      - name: Run go vet
+        run: go vet ./...
+  unit-test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - name: Download dependencies
+        run: go mod download
       - name: Run tests
         run: go test ./...
   lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -39,9 +60,17 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: 1.25.10         
-      - name: Install latest golangci-lint
-        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - name: Download dependencies
+        run: go mod download
+      - name: Install golangci-lint
+        run:
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
       - name: Run golangci-lint
         run: golangci-lint run
-
+      - name: Install yamllint
+        run:
+          go install github.com/wasilibs/go-yamllint/cmd/yamllint@latest
+      - name: Run yamllint
+        run: yamllint .

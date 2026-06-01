@@ -3,18 +3,34 @@ run:
 
 output:
   formats:
-    - format: colored-line-number   
+    - format: colored-line-number
 
 linters:
   disable-all: true
   enable:
+    - revive
     - govet
     - errcheck
     - ineffassign
     - staticcheck
+    - gosimple
+    - typecheck
     - unused
+    - gocognit
+    - dupl
     - gofumpt
+    - misspell
+    - unparam
+    - predeclared
 
 linters-settings:
+  gocognit:
+    min-complexity: 35
+  dupl:
+    threshold: 130
+  revive:
+    rules:
+      - name: exported
+        disabled: true
   gofumpt:
     extra-rules: true

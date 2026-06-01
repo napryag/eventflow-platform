@@ -1,0 +1,19 @@
+extends: default
+rules:
+  brackets:
+    max-spaces-inside: 1
+  document-start: disable
+  truthy:
+    allowed-values:
+      - 'true'
+      - 'false'
+      - 'yes'
+      - 'no'
+      - 'on'
+      - 'off'
+  line-length:
+    max: 120
+  trailing-spaces:
+    level: error
+  new-lines:
+    type: unix

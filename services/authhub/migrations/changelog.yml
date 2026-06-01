@@ -1,0 +1,5 @@
+databaseChangeLog:
+  # AuthHub migration entrypoint
+  - include:
+      file: changesets/task_2_1/01_db_objects.yml
+      relativeToChangelogFile: true

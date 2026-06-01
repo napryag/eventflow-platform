@@ -2,6 +2,7 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/napryag/eventflow-platform/pkg/errs"
 	"github.com/napryag/eventflow-platform/services/authhub/config"
 )
 
@@ -23,8 +24,9 @@ func New() *GinRouter {
 
 func (g *GinRouter) Run(address config.HTTPConfig) error {
 	if err := g.engine.Run(address.Host + ":" + address.Port); err != nil {
-		return err
+		return errs.New("faield to attach the router to http.Server").Wrap(err)
 	}
+
 	return nil
 }
 
