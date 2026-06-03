@@ -24,7 +24,7 @@ func New() *GinRouter {
 
 func (g *GinRouter) Run(address config.HTTPConfig) error {
 	if err := g.engine.Run(address.Host + ":" + address.Port); err != nil {
-		return errs.New("failed to attach the router to http.Server").Wrap(err)
+		return errs.New("faield to attach the router to http.Server").Wrap(err)
 	}
 
 	return nil

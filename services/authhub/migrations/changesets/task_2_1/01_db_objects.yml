@@ -1,7 +1,4 @@
 databaseChangeLog:
-  - preConditions:
-      - runningAs:
-          username: eventflow
   - changeSet:
       id: task_2_1_table_users
       author: author
@@ -22,17 +19,17 @@ databaseChangeLog:
                     unique: true
                     nullable: false
               - column:
-                  name: password_hash
+                  name: passwordhash
                   type: varchar
                   constraints:
                     nullable: false
               - column:
-                  name: created_at
+                  name: createdat
                   type: timestamptz
                   constraints:
                     nullable: false
               - column:
-                  name: updated_at
+                  name: updatedat
                   type: timestamptz
                   constraints:
                     nullable: false
