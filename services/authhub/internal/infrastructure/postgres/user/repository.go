@@ -19,8 +19,8 @@ func NewRepository(db *gorm.DB) *Repository {
 }
 
 func (r *Repository) Create(ctx context.Context, user user.User) error {
-	model := toModel(user)
-	if err := r.db.WithContext(ctx).Create(model).Error; err != nil {
+	userModel := toModel(user)
+	if err := r.db.WithContext(ctx).Create(userModel).Error; err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			return application.ErrUserAlreadyExists
 		}
@@ -31,10 +31,10 @@ func (r *Repository) Create(ctx context.Context, user user.User) error {
 }
 
 func (r *Repository) GetByEmail(ctx context.Context, email string) (*user.User, error) {
-	var model model
+	var userModel model
 
 	if err := r.db.WithContext(ctx).Where("email = ?", email).
-		First(&model).
+		First(&userModel).
 		Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, application.ErrUserNotFound
@@ -43,14 +43,14 @@ func (r *Repository) GetByEmail(ctx context.Context, email string) (*user.User, 
 		return nil, err
 	}
 
-	return toDomain(model)
+	return toDomain(userModel)
 }
 
 func (r *Repository) GetByID(ctx context.Context, id uuid.UUID) (*user.User, error) {
-	var model model
+	var userModel model
 
 	if err := r.db.WithContext(ctx).Where("id = ?", id).
-		First(&model).
+		First(&userModel).
 		Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, application.ErrUserNotFound
@@ -59,5 +59,5 @@ func (r *Repository) GetByID(ctx context.Context, id uuid.UUID) (*user.User, err
 		return nil, err
 	}
 
-	return toDomain(model)
+	return toDomain(userModel)
 }
