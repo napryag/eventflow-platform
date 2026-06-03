@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type userModel struct {
+type model struct {
 	ID           uuid.UUID `gorm:"type:uuid;primaryKey;not null"`
 	Email        string    `gorm:"uniqueIndex;not null"`
 	PasswordHash string    `gorm:"not null"`

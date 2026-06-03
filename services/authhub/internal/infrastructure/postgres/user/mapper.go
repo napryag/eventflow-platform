@@ -2,8 +2,8 @@ package user
 
 import "github.com/napryag/eventflow-platform/services/authhub/internal/domain/user"
 
-func toModel(u user.User) userModel {
-	return userModel{
+func toModel(u user.User) model {
+	return model{
 		ID:           u.ID,
 		Email:        u.Email,
 		PasswordHash: u.PasswordHash,
@@ -12,12 +12,12 @@ func toModel(u user.User) userModel {
 	}
 }
 
-func toDomain(model userModel) (*user.User, error) {
+func toDomain(m model) (*user.User, error) {
 	return user.NewUser(
-		model.ID,
-		model.Email,
-		model.PasswordHash,
-		model.CreatedAt,
-		model.UpdatedAt,
+		m.ID,
+		m.Email,
+		m.PasswordHash,
+		m.CreatedAt,
+		m.UpdatedAt,
 	)
 }
