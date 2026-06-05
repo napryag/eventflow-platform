@@ -6,8 +6,8 @@ import (
 
 	"github.com/napryag/eventflow-platform/pkg/errs"
 	"github.com/napryag/eventflow-platform/pkg/logging/zerolog"
-	"github.com/napryag/eventflow-platform/pkg/postgres"
 	"github.com/napryag/eventflow-platform/services/authhub/config"
+	"github.com/napryag/eventflow-platform/services/authhub/internal/app"
 	"github.com/napryag/eventflow-platform/services/authhub/internal/interfaces/http"
 	"github.com/rs/zerolog/log"
 )
@@ -25,15 +25,13 @@ func main() {
 
 	router := http.New()
 
-	// TODO: temporary code.
-	// Connecting to db and ping.
-	db, err := postgres.NewConnection(ctx, cfg.Database, logger)
+	svc, err := app.BuildServices(ctx, cfg.Database, logger)
 	if err != nil {
-		logger.Err(err).Msg("failed to create new connection to db")
+		logger.Err(err).Msg("failed to build application services")
 		os.Exit(1)
 	}
 
-	_ = db
+	_ = svc // will be passed later
 
 	logger.Info().Str("service", "authhub").Msg("api initialized")
 
