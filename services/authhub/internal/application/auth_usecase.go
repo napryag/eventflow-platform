@@ -29,7 +29,7 @@ func NewAuthUseCase(
 	}
 }
 
-func (uc *AuthUseCase) Register(ctx context.Context, email string, password string) (*user.User, error) {
+func (uc *AuthUseCase) Register(ctx context.Context, email, password string) (*user.User, error) {
 	normalizedEmail, err := mail.ValidateAndNormalizeEmail(email)
 	if err != nil {
 		uc.logger.Err(err).Str("email", email).Msg("failed to validate email")
@@ -65,7 +65,7 @@ func (uc *AuthUseCase) Register(ctx context.Context, email string, password stri
 	return user, nil
 }
 
-func (uc *AuthUseCase) Authenticate(ctx context.Context, email string, password string) (*user.User, error) {
+func (uc *AuthUseCase) Authenticate(ctx context.Context, email, password string) (*user.User, error) {
 	normalizedEmail, err := mail.ValidateAndNormalizeEmail(email)
 	if err != nil {
 		uc.logger.Err(err).Str("email", email).Msg("failed to validate email")

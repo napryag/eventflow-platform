@@ -32,7 +32,7 @@ func (ph *PasswordHasher) HashPassword(password string) (string, error) {
 	return string(hash), nil
 }
 
-func (ph *PasswordHasher) ComparePassword(hash string, password string) error {
+func (ph *PasswordHasher) ComparePassword(hash, password string) error {
 	if password == "" {
 		return application.ErrEmptyPassword
 	}

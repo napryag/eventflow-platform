@@ -33,4 +33,4 @@ linters-settings:
       - name: exported
         disabled: true
   gofumpt:
-    extra-rules: false
+    extra-rules: true
