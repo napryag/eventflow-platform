@@ -10,14 +10,25 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type HTTPConfig struct {
-	Host string
-	Port string
-}
 type Config struct {
 	LogLevel int
 	HTTP     HTTPConfig
 	Database postgres.DatabaseConfig
+	Token    TokenConfig
+}
+
+type HTTPConfig struct {
+	Host string
+	Port string
+}
+
+type TokenConfig struct {
+	AccessSecret     string
+	RefreshSecret    string
+	Issuer           string
+	Audience         string
+	AccessTTLMinutes int
+	RefreshTTLHours  int
 }
 
 func Load() (*Config, error) {
@@ -41,6 +52,11 @@ func Load() (*Config, error) {
 	cfg.Database, err = loadDatabaseConfig()
 	if err != nil {
 		return nil, errs.New("failed to load database config").Wrap(err)
+	}
+
+	cfg.Token, err = loadTokenConfig()
+	if err != nil {
+		return nil, errs.New("failed to load token config").Wrap(err)
 	}
 
 	return &cfg, nil
@@ -157,4 +173,45 @@ func getPostgresSSLMode() (string, error) {
 	default:
 		return "", errs.New("unsupported POSTGRES_SSLMODE").Arg("value", mode)
 	}
+}
+
+func loadTokenConfig() (TokenConfig, error) {
+	var cfg TokenConfig
+	var err error
+
+	cfg.AccessSecret, err = config.GetEnvString("JWT_ACCESS_SECRET")
+	if err != nil {
+		return cfg, errs.New("failed to get JWT_ACCESS_SECRET").Wrap(err)
+	}
+
+	cfg.RefreshSecret, err = config.GetEnvString("JWT_REFRESH_SECRET")
+	if err != nil {
+		return cfg, errs.New("failed to get JWT_REFRESH_SECRET").Wrap(err)
+	}
+
+	cfg.Issuer, err = config.GetEnvString("JWT_ISSUER")
+	if err != nil {
+		return cfg, errs.New("failed to get JWT_ISSUER").Wrap(err)
+	}
+
+	cfg.Audience, err = config.GetEnvString("JWT_AUDIENCE")
+	if err != nil {
+		return cfg, errs.New("failed to get JWT_AUDIENCE").Wrap(err)
+	}
+
+	cfg.AccessTTLMinutes, err = config.GetEnvTTL("JWT_ACCESS_TTL_MINUTES")
+	if err != nil {
+		return cfg, errs.New("failed to get JWT_ACCESS_TTL_MINUTES").Wrap(err)
+	}
+
+	cfg.RefreshTTLHours, err = config.GetEnvTTL("JWT_REFRESH_TTL_HOURS")
+	if err != nil {
+		return cfg, errs.New("failed to get JWT_REFRESH_TTL_HOURS").Wrap(err)
+	}
+
+	if cfg.AccessSecret == cfg.RefreshSecret {
+		return cfg, errs.New("access & refresh secret must be different")
+	}
+
+	return cfg, nil
 }
