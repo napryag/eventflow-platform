@@ -21,9 +21,5 @@ func BuildServices(ctx context.Context, cfg postgres.DatabaseConfig, logger logg
 		return nil, errs.New("failed to create new connection to db").Wrap(err)
 	}
 
-	users := user.NewRepository(db)
-
-	hasher := bcrypt.NewPasswordHasher()
-
-	return &Services{AuthUseCase: application.NewAuthUseCase(users, hasher, logger)}, nil
+	return &Services{AuthUseCase: application.NewAuthUseCase(user.NewRepository(db), bcrypt.NewPasswordHasher(), logger)}, nil
 }

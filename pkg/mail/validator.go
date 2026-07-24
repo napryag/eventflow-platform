@@ -8,14 +8,12 @@ import (
 )
 
 func ValidateAndNormalizeEmail(email string) (string, error) {
-	email = strings.TrimSpace(strings.ToLower(email))
-
 	if email == "" {
 		return "", errs.New("empty email")
 	}
 
-	if _, err := mail.ParseAddress(email); err != nil {
-		return "", errs.New("invalid email")
+	if _, err := mail.ParseAddress(strings.TrimSpace(strings.ToLower(email))); err != nil {
+		return "", errs.New("invalid email").Wrap(err)
 	}
 
 	return email, nil
