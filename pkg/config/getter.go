@@ -28,3 +28,15 @@ func GetEnvString(key string) (string, error) {
 	}
 	return valueString, nil
 }
+
+func GetEnvTTL(key string) (int, error) {
+	ttl, err := GetEnvInt(key)
+	if err != nil {
+		return 0, errs.New("failed to get int").Wrap(err)
+	}
+	if ttl <= 0 {
+		return 0, errs.New("ttl must be >0")
+	}
+
+	return ttl, nil
+}
