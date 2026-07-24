@@ -44,14 +44,14 @@ func (uc *AuthUseCase) Register(ctx context.Context, email, password string) (*u
 		return nil, err
 	}
 
-	user, err := user.NewUser(uuid.New(), normalizedEmail, hashedPassword, time.Now(), time.Now())
+	domainUser, err := user.NewUser(uuid.New(), normalizedEmail, hashedPassword, time.Now(), time.Now())
 	if err != nil {
 		uc.logger.Err(err).Msg("failed to create user domain object")
 
 		return nil, err
 	}
 
-	if err := uc.users.Create(ctx, *user); err != nil {
+	if err := uc.users.Create(ctx, *domainUser); err != nil {
 		if errors.Is(err, ErrUserAlreadyExists) {
 			uc.logger.Warn().Str("email", normalizedEmail).Msg("user already exists")
 
@@ -62,7 +62,7 @@ func (uc *AuthUseCase) Register(ctx context.Context, email, password string) (*u
 		return nil, err
 	}
 
-	return user, nil
+	return domainUser, nil
 }
 
 func (uc *AuthUseCase) Authenticate(ctx context.Context, email, password string) (*user.User, error) {
@@ -73,7 +73,7 @@ func (uc *AuthUseCase) Authenticate(ctx context.Context, email, password string)
 		return nil, err
 	}
 
-	user, err := uc.users.GetByEmail(ctx, normalizedEmail)
+	domainUser, err := uc.users.GetByEmail(ctx, normalizedEmail)
 	if err != nil {
 		if errors.Is(err, ErrUserNotFound) {
 			uc.logger.Warn().Str("email", normalizedEmail).Msg("user not found")
@@ -85,11 +85,11 @@ func (uc *AuthUseCase) Authenticate(ctx context.Context, email, password string)
 		return nil, err
 	}
 
-	if err := uc.hasher.ComparePassword(user.PasswordHash, password); err != nil {
+	if err := uc.hasher.ComparePassword(domainUser.PasswordHash, password); err != nil {
 		uc.logger.Err(err).Msg("failed to compare password")
 
 		return nil, ErrInvalidCredentials
 	}
 
-	return user, nil
+	return domainUser, nil
 }
